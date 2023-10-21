@@ -100,12 +100,9 @@ void ClipperAudioProcessor::changeProgramName (int index, const juce::String& ne
 //==============================================================================
 void ClipperAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    //auto lastOverSample = overSamplers.size() - 1;
-    //auto highestFactor = overSamplers[lastOverSample].getOversamplingFactor();
-
     juce::dsp::ProcessSpec spec;
     spec.maximumBlockSize = samplesPerBlock;
-    spec.sampleRate = sampleRate; //* highestFactor;
+    spec.sampleRate = sampleRate;
     spec.numChannels = getTotalNumInputChannels();
 
     inGain.reset();

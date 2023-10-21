@@ -9,6 +9,8 @@
             file="../../Muisc/Pictures/KITIK_LOGO_NO_BKGD.png"/>
     </GROUP>
     <GROUP id="{43BAFFF6-06F2-14B5-6636-EE93D8ABFDA0}" name="Source">
+      <FILE id="uGRlGk" name="Clipper.cpp" compile="1" resource="0" file="Source/Clipper.cpp"/>
+      <FILE id="vGjCTw" name="Clipper.h" compile="0" resource="0" file="Source/Clipper.h"/>
       <FILE id="Bqni8g" name="KiTiKLNF.cpp" compile="1" resource="0" file="Source/KiTiKLNF.cpp"/>
       <FILE id="psI0Zc" name="KiTiKLNF.h" compile="0" resource="0" file="Source/KiTiKLNF.h"/>
       <FILE id="uOD42S" name="PluginProcessor.cpp" compile="1" resource="0"
