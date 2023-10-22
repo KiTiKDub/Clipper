@@ -13,6 +13,21 @@
 
 struct Clipper 
 {
-    void prepareToPlay(double sampleRate, int samplesPerBlock, int numChannels);
-    void process(juce::AudioBuffer<float>& buffer);
+    void process(juce::dsp::AudioBlock<float>& block, int channel);
+    void updateParams(int mode, float threshold);
+
+private:
+
+    enum 
+    {
+        hardClipper,
+        cubic,
+        sin,
+        hTangent,
+        arcTangent,
+        quintic
+    };
+
+    int clipperMode;
+    float clipperThresh;
 };

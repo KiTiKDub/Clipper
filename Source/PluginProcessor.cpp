@@ -176,102 +176,11 @@ void ClipperAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     auto ovBlock = overSamplers[ovRate].processSamplesUp(inputBlock);
     auto ovContext = juce::dsp::ProcessContextReplacing<float>(ovBlock);
 
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelInput = ovContext.getInputBlock().getChannelPointer(channel);
-        auto* channelOutput = ovContext.getOutputBlock().getChannelPointer(channel);
+    clipper.updateParams(clipSelect->get(), threshold->get());
 
-        auto len = ovContext.getInputBlock().getNumSamples();
-
-        if (clipSelect->get() == 1) //Hard Clipper
-        {
-            for (int s = 0; s < len; ++s)
-            {
-                auto gain = juce::Decibels::decibelsToGain(threshold->get());
-                channelInput[s] > gain ? channelOutput[s] = gain : channelOutput[s] = channelInput[s];
-                channelInput[s] < -gain ? channelOutput[s] = -gain : channelOutput[s] = channelInput[s];
-            }
-        }
-
-        else if (clipSelect->get() == 2) //Soft Clipper (cubixc)
-        {
-            for (int s = 0; s < len; ++s)
-            {
-                auto newLimit = juce::Decibels::decibelsToGain(threshold->get());
-                auto inverse = 1 / newLimit;
-                auto resizeSamples = channelInput[s] * inverse;
-                resizeSamples > 1 ? resizeSamples = 1 : resizeSamples = resizeSamples;
-                resizeSamples < -1 ? resizeSamples = -1 : resizeSamples = resizeSamples;
-                auto cubic = (resizeSamples - pow(resizeSamples, 3) / 3);
-
-                channelOutput[s] = cubic * newLimit;
-            }
-        }
-
-        else if (clipSelect->get() == 3) //sin clipping, 
-        {
-            for (int s = 0; s < len; ++s)
-            {
-                auto newLimit = juce::Decibels::decibelsToGain(threshold->get());
-                auto inverse = 1 / newLimit;
-                auto resizeSamples = channelInput[s] * inverse;
-                resizeSamples > 1 ? resizeSamples = 1 : resizeSamples = resizeSamples;
-                resizeSamples < -1 ? resizeSamples = -1 : resizeSamples = resizeSamples;
-
-                auto sinosidal = sin(3 * juce::MathConstants<float>::pi * resizeSamples / 4);
-
-                channelOutput[s] = sinosidal * newLimit;
-            }
-
-        }
-
-        else if (clipSelect->get() == 4) //hyperbolic tangent
-        {
-            for (int s = 0; s < len; ++s)
-            {
-                auto newLimit = juce::Decibels::decibelsToGain(threshold->get());
-                auto inverse = 1 / newLimit;
-                auto resizeSamples = channelInput[s] * inverse;
-                resizeSamples > 1 ? resizeSamples = 1 : resizeSamples = resizeSamples;
-                resizeSamples < -1 ? resizeSamples = -1 : resizeSamples = resizeSamples;
-
-                auto hyperTan = tanh(5 * resizeSamples) * (3 / juce::MathConstants<float>::pi);
-
-                channelOutput[s] = hyperTan * newLimit;
-            }
-        }
-
-        else if (clipSelect->get() == 5) //arctangent tangent
-        {
-            for (int s = 0; s < len; ++s)
-            {
-                auto newLimit = juce::Decibels::decibelsToGain(threshold->get());
-                auto inverse = 1 / newLimit;
-                auto resizeSamples = channelInput[s] * inverse;
-                resizeSamples > 1 ? resizeSamples = 1 : resizeSamples = resizeSamples;
-                resizeSamples < -1 ? resizeSamples = -1 : resizeSamples = resizeSamples;
-
-                auto hyperTan = atan(5 * resizeSamples) * (2 / juce::MathConstants<float>::pi);
-
-                channelOutput[s] = hyperTan * newLimit;
-            }
-        }
-
-        else if (clipSelect->get() == 6) //Soft Clipper (quntic)
-        {
-            for (int s = 0; s < len; ++s)
-            {
-                auto newLimit = juce::Decibels::decibelsToGain(threshold->get());
-                auto inverse = 1 / newLimit;
-                auto resizeSamples = channelInput[s] * inverse;
-                resizeSamples > 1 ? resizeSamples = 1 : resizeSamples = resizeSamples;
-                resizeSamples < -1 ? resizeSamples = -1 : resizeSamples = resizeSamples;
-                auto quintic = resizeSamples - pow(resizeSamples, 5) / 5;
-
-                channelOutput[s] = quintic * newLimit;
-            }
-        }
-    }
+    for (int channel = 0; channel < totalNumInputChannels; ++channel)  
+        clipper.process(ovBlock, channel);
+  
     auto& outputBlock = inputContext.getOutputBlock();
     overSamplers[ovRate].processSamplesDown(outputBlock);
 
@@ -317,8 +226,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout ClipperAudioProcessor::creat
 
     layout.add(std::make_unique<AudioParameterBool>("bypass", "Bypass", false));
     layout.add(std::make_unique<AudioParameterFloat>("inValue", "In Gain", gainRange, 0));
-    layout.add(std::make_unique<AudioParameterInt>("clipSelect", "Clipper Select", 1, 6, 1));
-    layout.add(std::make_unique<AudioParameterInt>("oversampleSelect", "OverSample Factor", 0, 3, 2));
+    layout.add(std::make_unique<AudioParameterInt>("clipSelect", "Clipper Select", 0, 5, 0));
+    layout.add(std::make_unique<AudioParameterInt>("oversampleSelect", "OverSample Factor", 0, 3, 0));
     layout.add(std::make_unique<AudioParameterFloat>("threshold", "Threshold", threshRange, 0));
     layout.add(std::make_unique<AudioParameterFloat>("outValue", "Out Gain", gainRange, 0));
 

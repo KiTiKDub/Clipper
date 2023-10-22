@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Clipper.h"
 
 //==============================================================================
 /**
@@ -60,6 +61,8 @@ public:
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "parameters", createParameterLayout() };
 
 private:
+
+    Clipper clipper;
 
     std::array<juce::dsp::Oversampling<float>, 4> overSamplers
     { {
