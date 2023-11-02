@@ -10,7 +10,7 @@
 
 #include <JuceHeader.h>
 #include "Clipper.h"
-
+#include "LevelMeter/LevelMeterData.h"
 //==============================================================================
 /**
 */
@@ -60,6 +60,8 @@ public:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "parameters", createParameterLayout() };
 
+    LevelMeterData levelMeterData;
+
 private:
 
     Clipper clipper;
@@ -71,8 +73,6 @@ private:
         {2, 2, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR},
         {2, 3, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR},
     } };
-
-    //juce::dsp::Oversampling<float> overSample{ 2, 0, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR };
 
     juce::dsp::Gain<float> inGain;
     juce::dsp::Gain<float> outGain;

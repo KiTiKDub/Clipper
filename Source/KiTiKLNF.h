@@ -29,14 +29,14 @@ struct Laf : juce::LookAndFeel_V4 {
         const juce::String& text, const juce::String& shortcutKeyText,
         const juce::Drawable* icon, const juce::Colour* textColour) override;
 
-    struct LevelMeter : juce::Component
-    {
-        void paint(juce::Graphics& g) override;
-        
-        //default value so the meters  are black when the plugin is launched
-        void setLevel(float value) { level = value; }
+    //struct LevelMeter : juce::Component
+    //{
+    //    void paint(juce::Graphics& g) override;
+    //    
+    //    //default value so the meters  are black when the plugin is launched
+    //    void setLevel(float value) { level = value; }
 
-    private:
-        float level = -60.f;
-    };
+    //private:
+    //    float level = -60.f;
+    //};
 };

@@ -162,6 +162,9 @@ void ClipperAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     if (bypass->get())
         return;
 
+    levelMeterData.process(true, 0, buffer);
+    levelMeterData.process(true, 1, buffer);
+
     auto inputBlock = juce::dsp::AudioBlock<float>(buffer);
     auto inputContext = juce::dsp::ProcessContextReplacing<float>(inputBlock);
 
@@ -186,6 +189,9 @@ void ClipperAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 
     outGain.setGainDecibels(outValue->get());
     outGain.process(inputContext);
+
+    levelMeterData.process(false, 0, buffer);
+    levelMeterData.process(false, 1, buffer);
 }
 
 //==============================================================================
@@ -196,8 +202,8 @@ bool ClipperAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* ClipperAudioProcessor::createEditor()
 {
-    //return new ClipperAudioProcessorEditor (*this);
-    return new juce::GenericAudioProcessorEditor(*this);
+    return new ClipperAudioProcessorEditor (*this);
+    //return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
